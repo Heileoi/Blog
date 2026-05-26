@@ -1,0 +1,29 @@
+# 后端忽略文件
+blog-backend/target/
+blog-backend/*.class
+blog-backend/*.jar
+blog-backend/*.war
+blog-backend/.mvn/
+blog-backend/mvnw
+blog-backend/mvnw.cmd
+
+# 前端忽略文件
+blog-frontend/node_modules/
+blog-frontend/dist/
+blog-frontend/.env.local
+blog-frontend/.env.*.local
+
+# IDE文件
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+
+# 系统文件
+.DS_Store
+Thumbs.db
+*.log
+
+# 上传文件
+uploads/
