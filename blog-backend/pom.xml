@@ -15,7 +15,7 @@
     <artifactId>blog</artifactId>
     <version>1.0.0</version>
     <name>xilei-blog</name>
-    <description>熙磊个人博客系统 - 企业级Java博客平台</description>
+    <description>熙磊个人博客系统 - Java博客平台</description>
 
     <properties>
         <java.version>17</java.version>

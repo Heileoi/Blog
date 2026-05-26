@@ -1,6 +1,6 @@
 # Heileoi个人博客系统
 
-一个基于 Spring Boot 3 + Vue 3 + uni-app 的企业级个人博客系统，支持Web端和微信小程序。
+一个基于 Spring Boot 3 + Vue 3 + uni-app 的个人博客系统，支持Web端和微信小程序。
 
 ## 技术栈
 
