@@ -6,6 +6,8 @@ import com.xilei.blog.mapper.NoticeMapper;
 import com.xilei.blog.service.NoticeService;
 import com.xilei.blog.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,6 +22,7 @@ public class NoticeServiceImpl implements NoticeService {
     private final NoticeMapper noticeMapper;
 
     @Override
+    @CacheEvict(value = "notices", allEntries = true)
     public void createNotice(Notice notice) {
         notice.setUserId(SecurityUtils.getCurrentUserId());
         if (notice.getStatus() == null) notice.setStatus(0);
@@ -28,16 +31,19 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     @Override
+    @CacheEvict(value = "notices", allEntries = true)
     public void updateNotice(Notice notice) {
         noticeMapper.updateById(notice);
     }
 
     @Override
+    @CacheEvict(value = "notices", allEntries = true)
     public void deleteNotice(Long noticeId) {
         noticeMapper.deleteById(noticeId);
     }
 
     @Override
+    @Cacheable(value = "notices", key = "'published'")
     public List<Notice> listPublishedNotices() {
         return noticeMapper.selectList(
                 new LambdaQueryWrapper<Notice>()

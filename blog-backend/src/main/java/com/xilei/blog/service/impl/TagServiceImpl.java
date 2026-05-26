@@ -11,6 +11,8 @@ import com.xilei.blog.mapper.ArticleTagMapper;
 import com.xilei.blog.mapper.TagMapper;
 import com.xilei.blog.service.TagService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,6 +32,7 @@ public class TagServiceImpl implements TagService {
     private final ArticleMapper articleMapper;
 
     @Override
+    @CacheEvict(value = {"tags", "hotTags"}, allEntries = true)
     public void createTag(Tag tag) {
         Long count = tagMapper.selectCount(
                 new LambdaQueryWrapper<Tag>().eq(Tag::getName, tag.getName())
@@ -41,11 +44,13 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
+    @CacheEvict(value = {"tags", "hotTags"}, allEntries = true)
     public void updateTag(Tag tag) {
         tagMapper.updateById(tag);
     }
 
     @Override
+    @CacheEvict(value = {"tags", "hotTags"}, allEntries = true)
     public void deleteTag(Long tagId) {
         // 检查标签是否被使用
         Long count = articleTagMapper.selectCount(
@@ -66,6 +71,7 @@ public class TagServiceImpl implements TagService {
      * 获取所有标签（含文章数量）
      */
     @Override
+    @Cacheable(value = "tags", key = "'withCount'")
     public List<Tag> listTagsWithCount() {
         List<Tag> tags = tagMapper.selectList(
                 new LambdaQueryWrapper<Tag>().orderByAsc(Tag::getCreateTime)
@@ -96,6 +102,7 @@ public class TagServiceImpl implements TagService {
      * 获取热门标签
      */
     @Override
+    @Cacheable(value = "hotTags", key = "#limit")
     public List<Tag> getHotTags(Integer limit) {
         List<Tag> tags = listTagsWithCount();
         return tags.stream()

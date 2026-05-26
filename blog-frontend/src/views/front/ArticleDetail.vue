@@ -112,10 +112,16 @@ const fetchComments = async () => {
 /** 点赞 */
 const handleLike = async () => {
   if (isLiked.value) return
-  await likeArticle(route.params.id)
-  article.value.likeCount++
-  isLiked.value = true
-  ElMessage.success('点赞成功')
+  try {
+    await likeArticle(route.params.id)
+    article.value.likeCount++
+    isLiked.value = true
+    ElMessage.success('点赞成功')
+  } catch (e) {
+    if (e.message?.includes('已经点赞')) {
+      isLiked.value = true
+    }
+  }
 }
 
 /** 提交评论 */

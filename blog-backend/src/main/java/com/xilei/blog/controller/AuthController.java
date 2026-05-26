@@ -1,5 +1,6 @@
 package com.xilei.blog.controller;
 
+import com.xilei.blog.common.OperationLogAnnotation;
 import com.xilei.blog.common.Result;
 import com.xilei.blog.dto.LoginRequest;
 import com.xilei.blog.dto.RegisterRequest;
@@ -30,6 +31,7 @@ public class AuthController {
      * POST /api/auth/login
      */
     @Operation(summary = "用户登录")
+    @OperationLogAnnotation(module = "认证管理", operation = "用户登录")
     @PostMapping("/login")
     public Result<Map<String, Object>> login(@Valid @RequestBody LoginRequest request) {
         Map<String, Object> result = userService.login(request);

@@ -1,5 +1,6 @@
 package com.xilei.blog.controller.admin;
 
+import com.xilei.blog.common.OperationLogAnnotation;
 import com.xilei.blog.common.PageResult;
 import com.xilei.blog.common.Result;
 import com.xilei.blog.entity.User;
@@ -37,6 +38,7 @@ public class AdminUserController {
     }
 
     @Operation(summary = "更新用户状态")
+    @OperationLogAnnotation(module = "用户管理", operation = "更新用户状态")
     @PutMapping("/status")
     public Result<Void> updateStatus(@RequestParam Long id, @RequestParam Integer status) {
         userService.updateUserStatus(id, status);
@@ -44,6 +46,7 @@ public class AdminUserController {
     }
 
     @Operation(summary = "更新用户角色")
+    @OperationLogAnnotation(module = "用户管理", operation = "更新用户角色")
     @PutMapping("/role")
     public Result<Void> updateRole(@RequestParam Long id, @RequestParam Integer role) {
         userService.updateUserRole(id, role);

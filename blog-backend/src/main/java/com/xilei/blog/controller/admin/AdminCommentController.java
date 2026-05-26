@@ -1,5 +1,6 @@
 package com.xilei.blog.controller.admin;
 
+import com.xilei.blog.common.OperationLogAnnotation;
 import com.xilei.blog.common.PageResult;
 import com.xilei.blog.common.Result;
 import com.xilei.blog.entity.Comment;
@@ -32,6 +33,7 @@ public class AdminCommentController {
     }
 
     @Operation(summary = "审核评论")
+    @OperationLogAnnotation(module = "评论管理", operation = "审核评论")
     @PutMapping("/audit")
     public Result<Void> auditComment(@RequestParam Long id, @RequestParam Integer status) {
         commentService.auditComment(id, status);
@@ -39,6 +41,7 @@ public class AdminCommentController {
     }
 
     @Operation(summary = "删除评论")
+    @OperationLogAnnotation(module = "评论管理", operation = "删除评论")
     @DeleteMapping("/{id}")
     public Result<Void> deleteComment(@PathVariable Long id) {
         commentService.deleteComment(id);

@@ -108,8 +108,16 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * 处理请求过多（限流）
+     */
+    @ExceptionHandler(org.springframework.web.servlet.NoHandlerFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Result<Void> handleNoHandlerFound(org.springframework.web.servlet.NoHandlerFoundException e) {
+        return Result.notFound();
+    }
+
+    /**
      * 处理所有未捕获的异常（兜底处理）
-     * 场景：系统内部错误、未知异常等
      */
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

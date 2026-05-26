@@ -35,11 +35,9 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   (response) => {
     const res = response.data
-    // 业务成功
     if (res.code === 200) {
       return res
     }
-    // 未登录或Token过期
     if (res.code === 401) {
       ElMessage.error('登录已过期，请重新登录')
       const userStore = useUserStore()
@@ -47,18 +45,29 @@ service.interceptors.response.use(
       router.push('/login')
       return Promise.reject(new Error(res.message))
     }
-    // 权限不足
     if (res.code === 403) {
       ElMessage.error('没有操作权限')
       return Promise.reject(new Error(res.message))
     }
-    // 其他业务错误
+    if (res.code === 429) {
+      ElMessage.warning(res.message || '请求过于频繁，请稍后再试')
+      return Promise.reject(new Error(res.message))
+    }
     ElMessage.error(res.message || '请求失败')
     return Promise.reject(new Error(res.message))
   },
   (error) => {
-    // 网络错误
-    if (error.message.includes('timeout')) {
+    const status = error.response?.status
+    if (status === 401) {
+      const userStore = useUserStore()
+      userStore.logout()
+      router.push('/login')
+      ElMessage.error('登录已过期，请重新登录')
+    } else if (status === 403) {
+      ElMessage.error('没有操作权限')
+    } else if (status === 429) {
+      ElMessage.warning('请求过于频繁，请稍后再试')
+    } else if (error.message.includes('timeout')) {
       ElMessage.error('请求超时，请稍后重试')
     } else if (error.message.includes('Network Error')) {
       ElMessage.error('网络连接异常')

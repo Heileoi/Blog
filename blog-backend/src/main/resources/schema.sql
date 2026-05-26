@@ -4,6 +4,10 @@
 -- 字符集: utf8mb4
 -- =============================================
 
+SET NAMES utf8mb4;
+SET CHARACTER_SET_CLIENT = utf8mb4;
+SET CHARACTER_SET_CONNECTION = utf8mb4;
+
 -- 创建数据库
 CREATE DATABASE IF NOT EXISTS blog_db DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 
@@ -15,7 +19,7 @@ USE blog_db;
 CREATE TABLE IF NOT EXISTS `tb_user` (
     `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '用户ID',
     `username` VARCHAR(50) NOT NULL COMMENT '用户名',
-    `password` VARCHAR(100) NOT NULL COMMENT '密码(BCrypt加密)',
+    `password` VARCHAR(200) NOT NULL COMMENT '密码(BCrypt加密)',
     `nickname` VARCHAR(50) DEFAULT NULL COMMENT '昵称',
     `email` VARCHAR(100) DEFAULT NULL COMMENT '邮箱',
     `avatar` VARCHAR(255) DEFAULT NULL COMMENT '头像URL',
@@ -179,7 +183,7 @@ CREATE TABLE IF NOT EXISTS `tb_operation_log` (
     `username` VARCHAR(50) DEFAULT NULL COMMENT '操作用户名',
     `module` VARCHAR(50) DEFAULT NULL COMMENT '操作模块',
     `operation` VARCHAR(50) DEFAULT NULL COMMENT '操作类型',
-    `method` VARCHAR(10) DEFAULT NULL COMMENT '请求方法',
+    `method` VARCHAR(200) DEFAULT NULL COMMENT '请求方法',
     `url` VARCHAR(255) DEFAULT NULL COMMENT '请求URL',
     `params` TEXT COMMENT '请求参数',
     `ip_address` VARCHAR(50) DEFAULT NULL COMMENT 'IP地址',
@@ -245,18 +249,18 @@ CREATE TABLE IF NOT EXISTS `tb_article_collect` (
 
 -- 插入管理员用户 (密码: admin123, BCrypt加密)
 INSERT INTO `tb_user` (`username`, `password`, `nickname`, `email`, `avatar`, `bio`, `role`, `status`)
-VALUES ('admin', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iAt6Z5EH', '王熙磊', 'admin@xilei.com', '/default-avatar.png', '资深Java开发工程师，10年+开发经验', 1, 1);
+VALUES ('admin', '$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', 'wangxilei', 'admin@xilei.com', '/default-avatar.png', 'Java Dev, 10yr+', 1, 1);
 
 -- 插入默认分类
 INSERT INTO `tb_category` (`name`, `slug`, `description`, `sort_order`) VALUES
-('技术笔记', 'tech', '技术学习笔记和总结', 1),
-('Java', 'java', 'Java相关技术', 2),
-('Spring', 'spring', 'Spring框架相关', 3),
-('数据库', 'database', '数据库技术', 4),
-('前端开发', 'frontend', '前端技术', 5),
-('运维部署', 'devops', '运维和部署相关', 6),
-('项目实战', 'project', '项目实战经验', 7),
-('生活随笔', 'life', '生活感悟和随笔', 8);
+('Tech Notes', 'tech', 'Tech learning notes', 1),
+('Java', 'java', 'Java tech', 2),
+('Spring', 'spring', 'Spring framework', 3),
+('Database', 'database', 'Database tech', 4),
+('Frontend', 'frontend', 'Frontend tech', 5),
+('DevOps', 'devops', 'DevOps and deploy', 6),
+('Project', 'project', 'Project practice', 7),
+('Life', 'life', 'Life and thoughts', 8);
 
 -- 插入默认标签
 INSERT INTO `tb_tag` (`name`, `slug`, `color`) VALUES
@@ -268,19 +272,19 @@ INSERT INTO `tb_tag` (`name`, `slug`, `color`) VALUES
 ('Docker', 'docker', '#2496ed'),
 ('Linux', 'linux', '#fcc624'),
 ('MyBatis', 'mybatis', '#e35b25'),
-('微服务', 'microservice', '#ff6b6b'),
-('设计模式', 'design-pattern', '#9b59b6');
+('Microservice', 'microservice', '#ff6b6b'),
+('Design Pattern', 'design-pattern', '#9b59b6');
 
 -- 插入系统配置
 INSERT INTO `tb_system_config` (`config_key`, `config_value`, `description`, `config_group`) VALUES
-('blog_name', '熙磊的个人博客', '博客名称', 'basic'),
-('blog_url', 'http://localhost:5173', '博客地址', 'basic'),
-('blog_description', '一个企业级Java博客系统', '博客描述', 'basic'),
-('blog_keywords', 'Java,Spring Boot,博客,技术', 'SEO关键词', 'seo'),
-('blog_footer', '© 2024 王熙磊. All Rights Reserved.', '页脚信息', 'basic'),
-('comment_audit', 'false', '评论是否需要审核', 'basic'),
-('file_max_size', '20', '文件上传最大大小(MB)', 'basic');
+('blog_name', 'Xilei Blog', 'Blog name', 'basic'),
+('blog_url', 'http://localhost:5173', 'Blog URL', 'basic'),
+('blog_description', 'An enterprise Java blog system', 'Blog description', 'basic'),
+('blog_keywords', 'Java,Spring Boot,Blog', 'SEO keywords', 'seo'),
+('blog_footer', '2024 Wang Xilei. All Rights Reserved.', 'Footer', 'basic'),
+('comment_audit', 'false', 'Comment audit', 'basic'),
+('file_max_size', '20', 'Max upload size(MB)', 'basic');
 
 -- 插入示例公告
 INSERT INTO `tb_notice` (`title`, `content`, `type`, `status`) VALUES
-('欢迎访问我的博客', '欢迎来到熙磊的个人博客！这里记录了我的技术学习和项目经验。', 1, 1);
+('Welcome to my blog', 'Welcome! This blog records my tech learning and project experience.', 1, 1);

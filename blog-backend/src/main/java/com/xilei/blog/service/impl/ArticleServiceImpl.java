@@ -18,6 +18,8 @@ import com.xilei.blog.service.ArticleService;
 import com.xilei.blog.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,6 +52,7 @@ public class ArticleServiceImpl implements ArticleService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @CacheEvict(value = {"hotArticles", "featuredArticles", "latestArticles", "archives"}, allEntries = true)
     public Long createArticle(ArticleDTO articleDTO) {
         Article article = new Article();
         BeanUtils.copyProperties(articleDTO, article);
@@ -84,6 +87,7 @@ public class ArticleServiceImpl implements ArticleService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @CacheEvict(value = {"hotArticles", "featuredArticles", "latestArticles", "archives"}, allEntries = true)
     public void updateArticle(ArticleDTO articleDTO) {
         if (articleDTO.getId() == null) {
             throw new BusinessException("文章ID不能为空");
@@ -121,6 +125,7 @@ public class ArticleServiceImpl implements ArticleService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @CacheEvict(value = {"hotArticles", "featuredArticles", "latestArticles", "archives"}, allEntries = true)
     public void deleteArticle(Long articleId) {
         articleMapper.deleteById(articleId);
         // 删除标签关联
@@ -223,6 +228,7 @@ public class ArticleServiceImpl implements ArticleService {
      * 获取热门文章
      */
     @Override
+    @Cacheable(value = "hotArticles", key = "#limit")
     public List<Article> getHotArticles(Integer limit) {
         List<Article> articles = articleMapper.selectList(
                 new LambdaQueryWrapper<Article>()
@@ -238,6 +244,7 @@ public class ArticleServiceImpl implements ArticleService {
      * 获取推荐文章
      */
     @Override
+    @Cacheable(value = "featuredArticles", key = "#limit")
     public List<Article> getFeaturedArticles(Integer limit) {
         List<Article> articles = articleMapper.selectList(
                 new LambdaQueryWrapper<Article>()
@@ -254,6 +261,7 @@ public class ArticleServiceImpl implements ArticleService {
      * 获取最新文章
      */
     @Override
+    @Cacheable(value = "latestArticles", key = "#limit")
     public List<Article> getLatestArticles(Integer limit) {
         List<Article> articles = articleMapper.selectList(
                 new LambdaQueryWrapper<Article>()
@@ -269,22 +277,34 @@ public class ArticleServiceImpl implements ArticleService {
      * 获取文章归档
      */
     @Override
+    @Cacheable(value = "archives")
     public List<Map<String, Object>> getArchives() {
         return articleMapper.selectArchives();
     }
 
     /**
-     * 点赞文章
+     * 点赞文章（Redis防重复点赞）
      */
     @Override
     public void likeArticle(Long articleId) {
+        String likeKey = "article:like:" + articleId;
+        Long userId = SecurityUtils.getCurrentUserId();
+        String member = userId != null ? String.valueOf(userId) : "anonymous";
+
+        Boolean isMember = redisTemplate.opsForSet().isMember(likeKey, member);
+        if (Boolean.TRUE.equals(isMember)) {
+            throw new BusinessException("您已经点赞过这篇文章了");
+        }
+
         articleMapper.incrementLikeCount(articleId);
+        redisTemplate.opsForSet().add(likeKey, member);
     }
 
     /**
      * 更新文章状态
      */
     @Override
+    @CacheEvict(value = {"hotArticles", "featuredArticles", "latestArticles", "archives"}, allEntries = true)
     public void updateArticleStatus(Long articleId, Integer status) {
         Article article = articleMapper.selectById(articleId);
         if (article == null) {
@@ -301,6 +321,7 @@ public class ArticleServiceImpl implements ArticleService {
      * 更新文章置顶状态
      */
     @Override
+    @CacheEvict(value = {"hotArticles", "featuredArticles", "latestArticles"}, allEntries = true)
     public void updateArticleTop(Long articleId, Integer isTop) {
         Article article = articleMapper.selectById(articleId);
         if (article == null) {

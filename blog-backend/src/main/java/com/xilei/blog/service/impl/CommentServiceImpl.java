@@ -12,8 +12,11 @@ import com.xilei.blog.mapper.ArticleMapper;
 import com.xilei.blog.mapper.CommentMapper;
 import com.xilei.blog.mapper.UserMapper;
 import com.xilei.blog.service.CommentService;
+import com.xilei.blog.utils.SanitizeUtils;
 import com.xilei.blog.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -49,7 +52,7 @@ public class CommentServiceImpl implements CommentService {
         }
 
         Comment comment = new Comment();
-        comment.setContent(commentDTO.getContent());
+        comment.setContent(SanitizeUtils.sanitizeHtml(commentDTO.getContent()));
         comment.setArticleId(commentDTO.getArticleId());
         comment.setParentId(commentDTO.getParentId() != null ? commentDTO.getParentId() : 0L);
         comment.setReplyUserId(commentDTO.getReplyUserId());
@@ -84,6 +87,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @CacheEvict(value = "comments", allEntries = true)
     public void auditComment(Long commentId, Integer status) {
         Comment comment = commentMapper.selectById(commentId);
         if (comment == null) {
@@ -136,6 +140,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @Cacheable(value = "comments", key = "'latest:' + #limit")
     public List<Comment> getLatestComments(Integer limit) {
         return commentMapper.selectList(
                 new LambdaQueryWrapper<Comment>()

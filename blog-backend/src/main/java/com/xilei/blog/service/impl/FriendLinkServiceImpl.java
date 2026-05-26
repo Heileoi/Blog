@@ -6,6 +6,8 @@ import com.xilei.blog.exception.BusinessException;
 import com.xilei.blog.mapper.FriendLinkMapper;
 import com.xilei.blog.service.FriendLinkService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,6 +29,7 @@ public class FriendLinkServiceImpl implements FriendLinkService {
     }
 
     @Override
+    @CacheEvict(value = "friendLinks", allEntries = true)
     public void auditFriendLink(Long linkId, Integer status) {
         FriendLink link = friendLinkMapper.selectById(linkId);
         if (link == null) {
@@ -37,16 +40,19 @@ public class FriendLinkServiceImpl implements FriendLinkService {
     }
 
     @Override
+    @CacheEvict(value = "friendLinks", allEntries = true)
     public void updateFriendLink(FriendLink friendLink) {
         friendLinkMapper.updateById(friendLink);
     }
 
     @Override
+    @CacheEvict(value = "friendLinks", allEntries = true)
     public void deleteFriendLink(Long linkId) {
         friendLinkMapper.deleteById(linkId);
     }
 
     @Override
+    @Cacheable(value = "friendLinks", key = "'approved'")
     public List<FriendLink> listApprovedFriendLinks() {
         return friendLinkMapper.selectList(
                 new LambdaQueryWrapper<FriendLink>()

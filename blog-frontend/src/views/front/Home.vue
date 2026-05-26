@@ -12,7 +12,13 @@
     <div class="home-content">
       <!-- 左侧文章列表 -->
       <div class="article-list">
-        <div class="card" v-for="article in articles" :key="article.id">
+        <!-- 加载骨架屏 -->
+        <template v-if="loading">
+          <div class="card skeleton-card" v-for="i in 3" :key="i">
+            <el-skeleton :rows="4" animated />
+          </div>
+        </template>
+        <div class="card" v-for="article in articles" :key="article.id" v-else>
           <div class="article-item">
             <!-- 封面图 -->
             <div class="article-cover" v-if="article.coverImage">
@@ -258,6 +264,11 @@ onMounted(async () => {
       flex-wrap: wrap;
     }
   }
+}
+
+.skeleton-card {
+  padding: 20px;
+  margin-bottom: 15px;
 }
 
 .pagination {

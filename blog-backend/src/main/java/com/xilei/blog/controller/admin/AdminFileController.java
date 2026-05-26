@@ -1,5 +1,6 @@
 package com.xilei.blog.controller.admin;
 
+import com.xilei.blog.common.OperationLogAnnotation;
 import com.xilei.blog.common.PageResult;
 import com.xilei.blog.common.Result;
 import com.xilei.blog.entity.UploadFile;
@@ -23,6 +24,7 @@ public class AdminFileController {
     private final FileService fileService;
 
     @Operation(summary = "上传文件")
+    @OperationLogAnnotation(module = "文件管理", operation = "上传文件")
     @PostMapping("/upload")
     public Result<String> uploadFile(@RequestParam("file") MultipartFile file) {
         String url = fileService.uploadFile(file);
@@ -30,6 +32,7 @@ public class AdminFileController {
     }
 
     @Operation(summary = "删除文件")
+    @OperationLogAnnotation(module = "文件管理", operation = "删除文件")
     @DeleteMapping("/{id}")
     public Result<Void> deleteFile(@PathVariable Long id) {
         fileService.deleteFile(id);

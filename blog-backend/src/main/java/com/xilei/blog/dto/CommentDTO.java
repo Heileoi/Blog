@@ -1,36 +1,29 @@
 package com.xilei.blog.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 
-/**
- * 评论DTO
- * 功能：封装评论提交的数据
- */
 @Data
 public class CommentDTO {
 
-    /** 文章ID */
     @NotNull(message = "文章ID不能为空")
     private Long articleId;
 
-    /** 评论内容 */
     @NotBlank(message = "评论内容不能为空")
+    @Size(min = 1, max = 2000, message = "评论内容长度1-2000个字符")
     private String content;
 
-    /** 父评论ID（回复时使用） */
     private Long parentId;
 
-    /** 回复目标用户ID */
     private Long replyUserId;
 
-    /** 游客昵称（未登录时使用） */
+    @Size(max = 50, message = "昵称最长50个字符")
     private String nickname;
 
-    /** 游客邮箱 */
+    @Email(message = "邮箱格式不正确")
+    @Size(max = 100, message = "邮箱最长100个字符")
     private String email;
 
-    /** 游客网站 */
+    @Size(max = 200, message = "网站地址最长200个字符")
     private String website;
 }

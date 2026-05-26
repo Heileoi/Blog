@@ -3,6 +3,8 @@ package com.xilei.blog.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xilei.blog.common.Result;
 import com.xilei.blog.security.JwtAuthenticationFilter;
+import com.xilei.blog.security.RateLimitFilter;
+import com.xilei.blog.security.SecurityHeaderFilter;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -35,22 +37,16 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final RateLimitFilter rateLimitFilter;
+    private final SecurityHeaderFilter securityHeaderFilter;
     private final ObjectMapper objectMapper;
 
-    /**
-     * 配置安全过滤链
-     * 定义哪些URL需要认证，哪些可以匿名访问
-     */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                // 禁用CSRF（REST API不需要）
                 .csrf(AbstractHttpConfigurer::disable)
-                // 无状态Session（使用JWT）
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                // URL权限配置
                 .authorizeHttpRequests(auth -> auth
-                        // 前台公开接口（无需认证）
                         .requestMatchers(
                                 "/front/**",
                                 "/auth/**",
@@ -61,12 +57,9 @@ public class SecurityConfig {
                                 "/favicon.ico",
                                 "/error"
                         ).permitAll()
-                        // 后台管理接口需要管理员权限
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        // 其他接口需要认证
                         .anyRequest().authenticated()
                 )
-                // 认证失败处理（未登录）
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((request, response, authException) -> {
                             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
@@ -76,7 +69,6 @@ public class SecurityConfig {
                                     objectMapper.writeValueAsString(Result.unauthorized())
                             );
                         })
-                        // 权限不足处理
                         .accessDeniedHandler((request, response, accessDeniedException) -> {
                             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
                             response.setCharacterEncoding("UTF-8");
@@ -86,7 +78,9 @@ public class SecurityConfig {
                             );
                         })
                 )
-                // 添加JWT过滤器
+                // 安全头 -> 限流 -> JWT认证（顺序很重要）
+                .addFilterBefore(securityHeaderFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(rateLimitFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

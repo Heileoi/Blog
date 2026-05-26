@@ -1,0 +1,17 @@
+# ===========================
+# 生产环境配置
+# ===========================
+
+# 关闭Swagger文档
+springdoc:
+  swagger-ui:
+    enabled: false
+  api-docs:
+    enabled: false
+
+# 生产环境日志级别
+logging:
+  level:
+    com.xilei.blog: info
+    com.xilei.blog.mapper: warn
+    org.springframework: warn

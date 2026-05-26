@@ -9,6 +9,8 @@ import com.xilei.blog.mapper.ArticleMapper;
 import com.xilei.blog.mapper.CategoryMapper;
 import com.xilei.blog.service.CategoryService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -28,6 +30,7 @@ public class CategoryServiceImpl implements CategoryService {
     private final ArticleMapper articleMapper;
 
     @Override
+    @CacheEvict(value = "categories", allEntries = true)
     public void createCategory(Category category) {
         // 检查分类名是否重复
         Long count = categoryMapper.selectCount(
@@ -46,6 +49,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @CacheEvict(value = "categories", allEntries = true)
     public void updateCategory(Category category) {
         if (category.getId() == null) {
             throw new BusinessException("分类ID不能为空");
@@ -54,6 +58,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @CacheEvict(value = "categories", allEntries = true)
     public void deleteCategory(Long categoryId) {
         // 检查分类下是否有文章
         Long articleCount = articleMapper.selectCount(
@@ -82,6 +87,7 @@ public class CategoryServiceImpl implements CategoryService {
      * 算法：1.查询所有分类 2.按parentId分组 3.递归构建树
      */
     @Override
+    @Cacheable(value = "categories", key = "'tree'")
     public List<Category> listCategoryTree() {
         List<Category> allCategories = categoryMapper.selectList(
                 new LambdaQueryWrapper<Category>().orderByAsc(Category::getSortOrder)
@@ -93,6 +99,7 @@ public class CategoryServiceImpl implements CategoryService {
      * 获取所有分类（含文章数量）
      */
     @Override
+    @Cacheable(value = "categories", key = "'withCount'")
     public List<Category> listCategoriesWithCount() {
         List<Category> categories = categoryMapper.selectList(
                 new LambdaQueryWrapper<Category>().orderByAsc(Category::getSortOrder)

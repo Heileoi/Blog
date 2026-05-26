@@ -1,5 +1,6 @@
 package com.xilei.blog.controller.admin;
 
+import com.xilei.blog.common.OperationLogAnnotation;
 import com.xilei.blog.common.PageResult;
 import com.xilei.blog.common.Result;
 import com.xilei.blog.dto.ArticleDTO;
@@ -29,6 +30,7 @@ public class AdminArticleController {
      * POST /api/admin/article
      */
     @Operation(summary = "创建文章")
+    @OperationLogAnnotation(module = "文章管理", operation = "创建文章")
     @PostMapping
     public Result<Long> createArticle(@Valid @RequestBody ArticleDTO articleDTO) {
         Long articleId = articleService.createArticle(articleDTO);
@@ -40,6 +42,7 @@ public class AdminArticleController {
      * PUT /api/admin/article
      */
     @Operation(summary = "更新文章")
+    @OperationLogAnnotation(module = "文章管理", operation = "更新文章")
     @PutMapping
     public Result<Void> updateArticle(@Valid @RequestBody ArticleDTO articleDTO) {
         articleService.updateArticle(articleDTO);
@@ -51,6 +54,7 @@ public class AdminArticleController {
      * DELETE /api/admin/article/{id}
      */
     @Operation(summary = "删除文章")
+    @OperationLogAnnotation(module = "文章管理", operation = "删除文章")
     @DeleteMapping("/{id}")
     public Result<Void> deleteArticle(@PathVariable Long id) {
         articleService.deleteArticle(id);

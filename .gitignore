@@ -6,6 +6,7 @@ blog-backend/*.war
 blog-backend/.mvn/
 blog-backend/mvnw
 blog-backend/mvnw.cmd
+blog-backend/.env
 
 # 前端忽略文件
 blog-frontend/node_modules/
@@ -24,6 +25,10 @@ blog-frontend/.env.*.local
 .DS_Store
 Thumbs.db
 *.log
+
+# Docker
+.docker/
+
 
 # 上传文件
 uploads/

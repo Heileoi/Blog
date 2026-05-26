@@ -1,5 +1,6 @@
 package com.xilei.blog.controller.admin;
 
+import com.xilei.blog.common.OperationLogAnnotation;
 import com.xilei.blog.common.Result;
 import com.xilei.blog.entity.Category;
 import com.xilei.blog.service.CategoryService;
@@ -23,6 +24,7 @@ public class AdminCategoryController {
     private final CategoryService categoryService;
 
     @Operation(summary = "创建分类")
+    @OperationLogAnnotation(module = "分类管理", operation = "创建分类")
     @PostMapping
     public Result<Void> createCategory(@RequestBody Category category) {
         categoryService.createCategory(category);
@@ -30,6 +32,7 @@ public class AdminCategoryController {
     }
 
     @Operation(summary = "更新分类")
+    @OperationLogAnnotation(module = "分类管理", operation = "更新分类")
     @PutMapping
     public Result<Void> updateCategory(@RequestBody Category category) {
         categoryService.updateCategory(category);
@@ -37,6 +40,7 @@ public class AdminCategoryController {
     }
 
     @Operation(summary = "删除分类")
+    @OperationLogAnnotation(module = "分类管理", operation = "删除分类")
     @DeleteMapping("/{id}")
     public Result<Void> deleteCategory(@PathVariable Long id) {
         categoryService.deleteCategory(id);
