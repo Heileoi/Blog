@@ -1,4 +1,4 @@
-# 熙磊个人博客系统
+# Heileoi个人博客系统
 
 一个基于 Spring Boot 3 + Vue 3 + uni-app 的企业级个人博客系统，支持Web端和微信小程序。
 
@@ -146,4 +146,4 @@ npm run dev:mp-weixin
 
 ## 作者
 
-**王熙磊** - 资深Java开发工程师
+**wangxilei**
